@@ -23,14 +23,13 @@ import time
 import sys
 import os
 
-sys.path.append("/home/d/code/mmdetection3d_ros/mmdet/src/mmdet")
+sys.path.append("xxx/src/mmdet")
 
 from argparse import ArgumentParser
 import math
 from mmdet3d.apis import inference_detector, init_model
 from mmdet3d.core.points import get_points_type
 from std_msgs.msg import Float64MultiArray
-from visualization_msgs.msg import Marker,MarkerArray
 
 class Pointpillars_ROS:
 
@@ -38,16 +37,17 @@ class Pointpillars_ROS:
 
         # build the model from a config file and a checkpoint file
         # 填写自己的实际路径
-        checkpoint_file = '/home/d/code/mmdetection3d_ros/mmdet/src/mmdet/tools/hv_pointpillars_secfpn_6x8_160e_kitti-3d-3class_20220301_150306-37dc2420.pth'
-        config_file = '/home/d/code/mmdetection3d_ros/mmdet/src/mmdet/tools/configs/pointpillars/hv_pointpillars_secfpn_6x8_160e_kitti-3d-3class.py'
+        checkpoint_file = 'xxx/hv_pointpillars_secfpn_6x8_160e_kitti-3d-3class_20220301_150306-37dc2420.pth'
+        config_file = 'xxx/tools/configs/pointpillars/hv_pointpillars_secfpn_6x8_160e_kitti-3d-3class.py'
         model = init_model(config_file, checkpoint_file, device='cuda:0')
         
         # 在回调函数中
-        #The filed_names depend on your dataset
+        #######The filed_names depend on your dataset#######
         points = np.array(pc2.read_points_list(msg, field_names = ("x", "y", "z","intensity"), skip_nans=True))
+        ######## 连接激光雷达进行实时检测时可以将'intensity'这一项置为0，不然有可能检测错误 ########
         points[:, [3]] = 0
         points_class = get_points_type('LIDAR')
-        #Here the points_dim is 4
+        ###### Here the points_dim is 4 ######
         points_mmdet3d = points_class(points, points_dim=points.shape[-1], attribute_dims=None)
         torch.cuda.synchronize()
         start_time = time.perf_counter()
