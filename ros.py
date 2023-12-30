@@ -43,9 +43,11 @@ class Pointpillars_ROS:
         model = init_model(config_file, checkpoint_file, device='cuda:0')
         
         # 在回调函数中
+        #The filed_names depend on your dataset
         points = np.array(pc2.read_points_list(msg, field_names = ("x", "y", "z","intensity"), skip_nans=True))
         points[:, [3]] = 0
         points_class = get_points_type('LIDAR')
+        #Here the points_dim is 4
         points_mmdet3d = points_class(points, points_dim=points.shape[-1], attribute_dims=None)
         torch.cuda.synchronize()
         start_time = time.perf_counter()
